@@ -36,40 +36,40 @@ The register method also accepts a block that gives you the device, challenge
 data (in JSON form), public key, key handle, attestation certificate and
 signature.  So the register call looks something like this:
 
-  let challenge : [String:Any] = [
-      "challenge": challengeData.base64EncodedString(),
-      "origin": "bundle:com.foo.bar"
-      ]
-  u2fManager.register(challenge: challenge) {
-    (device, challengeJSON, publicKey, keyHandle, attestationCertificate,
-     signature) in
-    ...
-  }
+    let challenge : [String:Any] = [
+        "challenge": challengeData.base64EncodedString(),
+        "origin": "bundle:com.foo.bar"
+        ]
+    u2fManager.register(challenge: challenge) {
+      (device, challengeJSON, publicKey, keyHandle, attestationCertificate,
+       signature) in
+      ...
+    }
 
 To authenticate using U2F, you use the "authenticate" method, which again takes
 a challenge, a list of key handles your system knows about and a block that is
 used to handle the response.  So it looks like:
 
-  let challenge : [String:Any] = [
-      "challenge": challengeData.base64EncodedString(),
-      "origin": "bundle.com.foo.bar"
-      ]
-  u2fManager.authenticate(challenge: challenge,
+    let challenge : [String:Any] = [
+        "challenge": challengeData.base64EncodedString(),
+        "origin": "bundle.com.foo.bar"
+        ]
+    u2fManager.authenticate(challenge: challenge,
   		          keyHandles: keyHandles) {
-    (status, challenge, responses) in
-    if status == .failed {
-      // Tell the user somehow
-      return
-    }
+      (status, challenge, responses) in
+      if status == .failed {
+        // Tell the user somehow
+        return
+      }
 
-    if responses.count == 0 {
-      // No responses; maybe retry? [A]
-      return
-    }
+      if responses.count == 0 {
+        // No responses; maybe retry? [A]
+        return
+      }
 
-    // Otherwise, responses is a list of U2FAuthResponse structs containing
-    // the relevant information
-  }
+      // Otherwise, responses is a list of U2FAuthResponse structs containing
+      // the relevant information
+    }
 
 In practice you may want to write the callback as a separate function/method
 because that makes it easy to trigger a retry from [A], above, as you can just
